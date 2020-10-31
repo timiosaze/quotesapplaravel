@@ -14,9 +14,9 @@
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/quotes', function(){
-    return view('quotes.index');
-});
-Route::get('/quotes/edit', function(){
-    return view('quotes.edit');
-});
+Route::get('/quotes', 'QuoteController@index')->name('quotes.index');
+Route::post('/quotes', 'QuoteController@store')->name('quotes.store');
+Route::get('/quotes/{id}/edit', 'QuoteController@edit')->name('quotes.edit');
+Route::put('/quotes/{id}', 'QuoteController@update')->name('quotes.update');
+Route::delete('/quotes/{id}', 'QuoteController@destroy')->name('quotes.destroy');
+   

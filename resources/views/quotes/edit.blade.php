@@ -4,6 +4,7 @@
 	
 		<section class="section">
 			<div class="create-form">
+				@include('includes.validation')
 				<h3>Edit Quote</h3>
 				<form action="{{route('quotes.update', $quote->id)}}" method="POST">
 					@csrf

@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Quote;
+use Auth;
 use Illuminate\Http\Request;
 
 class QuoteController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +20,7 @@ class QuoteController extends Controller
     public function index()
     {
         //
-        $quotes = Quote::orderBy('updated_at', 'desc')->get();
+        $quotes = Quote::where('user_id', Auth::id())->orderBy('updated_at', 'desc')->paginate(8);
 
         return view('quotes.index', compact("quotes"));
     }
@@ -47,9 +52,12 @@ class QuoteController extends Controller
         $quote = new Quote();
         $quote->the_quote = request('the_quote');
         $quote->author = request('author');
+        $quote->user_id = Auth::id();
 
         if($quote->save()){
-            return redirect('/quotes');
+            return redirect('/quotes')->with('success', 'Successfully saved');
+        } else {
+            return redirect('/quotes')->with('failure', 'Not saved');
         }
     }
 
@@ -72,7 +80,7 @@ class QuoteController extends Controller
      */
     public function edit($id)
     {
-        $quote = Quote::findOrFail($id);
+        $quote = Quote::where('user_id', Auth::id())->findOrFail($id);
 
         return view('quotes.edit', compact("quote"));
     }
@@ -92,14 +100,15 @@ class QuoteController extends Controller
             'author' => 'required'
         ]);
 
-        $quote = Quote::findOrFail($id);
+        $quote = Quote::where('user_id', Auth::id())->findOrFail($id);
         $quote->the_quote = request('the_quote');
         $quote->author = request('author');
 
         if($quote->save()){
-            return redirect('/quotes');
+            return redirect('/quotes')->with('success', 'Successfully updated');
+        } else {
+            return redirect('/quotes')->with('failure', 'Not updated');
         }
-
     }
 
     /**
@@ -111,10 +120,12 @@ class QuoteController extends Controller
     public function destroy($id)
     {
         //
-        $quote = Quote::findOrFail($id);
+        $quote = Quote::where('user_id', Auth::id())->findOrFail($id);
 
         if($quote->delete()){
-            return redirect('/quotes');
+            return redirect('/quotes')->with('success', 'Successfully deleted');
+        } else {
+            return redirect('/quotes')->with('failure', 'Not deleted');
         }
 
     }
